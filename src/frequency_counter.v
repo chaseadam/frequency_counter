@@ -37,6 +37,7 @@ module frequency_counter #(
     seven_segment seven_segment0(.clk(clk), .reset(reset), .load, .ten_count(tens), .unit_count(units), .segments(segments), .digit(digit));
     edge_detect edge_detect0(.clk(clk), .signal(signal), .leading_edge_detect(leading_edge_detect));
 
+    //copied from solution, but does not appear to be needed
     //always @(posedge clk) begin
     //    if(reset)
     //        update_period   <= UPDATE_PERIOD;
@@ -86,9 +87,13 @@ module frequency_counter #(
                     // count number of tens by subtracting 10 while edge counter >= 10
                     if (counter < 7'd10)
                         state <= STATE_UNITS;
-                    else
+                    // MUST use begin here otherwise will happen at same time
+                    // as state change and may wrap around the counter past
+                    // zero
+                    else begin
                         tens <= tens + 1;
                         counter <= counter - 7'd10;
+                    end
                 end
 
                 STATE_UNITS: begin
