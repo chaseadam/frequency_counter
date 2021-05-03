@@ -29,7 +29,7 @@ async def test_load(dut):
 
 @cocotb.test()
 async def test_all(dut):
-    clock_mhz = 12
+    clock_mhz = 18 #12
     clk_period_ns = round(1/clock_mhz * 1000, 2)
     dut.log.info("input clock = %d MHz, period = %.2f ns" %  (clock_mhz, clk_period_ns))
 
@@ -50,6 +50,7 @@ async def test_all(dut):
         # give it 3 update periods to allow counters to adjust
         await ClockCycles(dut.clk, period * 3)
         assert await read_segments(dut) == input_freq
+        print(await read_segments(dut))
 
         # kill signal
         input_signal.kill()

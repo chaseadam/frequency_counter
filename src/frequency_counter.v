@@ -26,6 +26,8 @@ module frequency_counter #(
 
     reg [2:0] state = STATE_COUNT;
 
+    reg [BITS-1:0] update_period;
+
     reg [3:0] tens;
     reg [3:0] units;
     reg load;
@@ -37,13 +39,15 @@ module frequency_counter #(
     seven_segment seven_segment0(.clk(clk), .reset(reset), .load, .ten_count(tens), .unit_count(units), .segments(segments), .digit(digit));
     edge_detect edge_detect0(.clk(clk), .signal(signal), .leading_edge_detect(leading_edge_detect));
 
-    //copied from solution, but does not appear to be needed
-    //always @(posedge clk) begin
-    //    if(reset)
-    //        update_period   <= UPDATE_PERIOD;
-    //    else if(period_load)
-    //        update_period   <= period;
-    //end
+    // Allows runtime change of "period" which equates to "units" of the counter
+    // Useful if osscillator changes
+    // 1200 = 10Hz (when 12MHz clock)
+    always @(posedge clk) begin
+        if(reset)
+            update_period   <= UPDATE_PERIOD;
+        else if(period_load)
+            update_period   <= period;
+    end
 
 
     always @(posedge clk) begin
@@ -79,7 +83,7 @@ module frequency_counter #(
                     // if clock cycles > UPDATE_PERIOD then go to next state
                     // if use a `begin` can clean up the counters here instead
                     // of in STATE_UNITS
-                    if (sample >= UPDATE_PERIOD)
+                    if (sample >= update_period)
                         state <= STATE_TENS;
                 end
 
