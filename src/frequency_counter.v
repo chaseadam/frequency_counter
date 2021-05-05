@@ -67,9 +67,10 @@ module frequency_counter #(
                 STATE_COUNT: begin
                     // stop loading of new values to 7segment
                     load <= 0;
-                    // could also do this in the if block which switches state
-                    tens    <= 0;
-                    units   <= 0;
+                    // Do this in if block to make sure "load" is off before
+                    // we clear these
+                    //tens    <= 0;
+                    //units   <= 0;
 
                     // count edges and clock cycles
                     sample <= sample + 1'b1;
@@ -86,6 +87,8 @@ module frequency_counter #(
                     // of in STATE_UNITS
                     if (sample >= update_period)
                         state <= STATE_TENS;
+                        tens    <= 0;
+                        units   <= 0;
                 end
 
                 STATE_TENS: begin
@@ -106,11 +109,12 @@ module frequency_counter #(
                     units <= counter; // not necessary to limit to bits [3:0];
                     // update the display
                     load <= 1'b1;
-                    // go back to counting
-                    state <= STATE_COUNT;
                     // have to set these *before* we get to STATE_COUNT
                     counter <= 0;
+                    // do this as part of state exit
                     sample  <= 0;
+                    // go back to counting
+                    state <= STATE_COUNT;
                 end
 
                 default:
