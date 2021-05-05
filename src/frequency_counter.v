@@ -87,8 +87,8 @@ module frequency_counter #(
                     // of in STATE_UNITS
                     if (sample >= update_period)
                         state <= STATE_TENS;
-                        tens    <= 0;
-                        units   <= 0;
+                        tens    <= 7'd0;
+                        units   <= 7'd0;
                 end
 
                 STATE_TENS: begin
