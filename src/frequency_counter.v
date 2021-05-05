@@ -5,15 +5,15 @@ module frequency_counter #(
     // for the localparams defined here. So the default is an UPDATE_PERIOD of 1200 and BITS = 12
     //
     // '-1' in the main, but not in the start
-    localparam UPDATE_PERIOD = 1200 - 1,
+    localparam UPDATE_PERIOD = 12000 - 1,
     localparam BITS = 12
 )(
     input wire              clk,
-    input wire              reset,
+    input wire              reset_n,
     input wire              signal,
 
-    input wire [BITS-1:0]   period,
-    input wire              period_load,
+    //input wire [BITS-1:0]   period,
+    //input wire              period_load,
 
     output wire [6:0]       segments,
     output wire             digit
@@ -32,6 +32,7 @@ module frequency_counter #(
     reg [3:0] units;
     reg load;
     wire leading_edge_detect;
+    wire reset = ~reset_n;
 
     reg [BITS-1:0] sample;
     reg [6:0] counter; //limit do 7 bits because we can only display up to 99 (2 digits)
@@ -42,17 +43,17 @@ module frequency_counter #(
     // Allows runtime change of "period" which equates to "units" of the counter
     // Useful if osscillator changes
     // 1200 = 10Hz (when 12MHz clock)
-    always @(posedge clk) begin
-        if(reset)
-            update_period   <= UPDATE_PERIOD;
-        else if(period_load)
-            update_period   <= period;
-    end
+    //always @(posedge clk) begin
+    //    if(reset)
+    //    else if(period_load)
+    //        update_period   <= period;
+    //end
 
 
     always @(posedge clk) begin
         if(reset) begin
             
+            update_period   <= UPDATE_PERIOD;
             tens    <= 0;
             units   <= 0;
             load    <= 0; 
